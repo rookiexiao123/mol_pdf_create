@@ -1,4 +1,5 @@
 # -*-coding:utf-8-*-
+# create new pdf, pdf2png, save png
 
 import os
 from random_words import LoremIpsum
