@@ -10,8 +10,8 @@ import time
 from pdf_2_img_Convert import convert
 
 current_dir = os.path.dirname(__file__)
-source_path = 'G:/xiao/dataset_molcreate/source/'
-preimage_path = 'G:/xiao/dataset_molcreate/pro_image/'
+
+preimage_path = 'G:/xiao/dataset_molcreateV2/data/pre_image/'
 
 head = r"""
 \documentclass[a4paper]{article}
@@ -200,10 +200,16 @@ if __name__ == '__main__':
         i = i + 1
         name = str(int(time.time()))
 
-        if not os.path.exists('G:/xiao/dataset_molcreate/gen_image/' + name):
-            os.makedirs('G:/xiao/dataset_molcreate/gen_image/' + name)
-        if not os.path.exists('G:/xiao/dataset_molcreate/source_image/gen_image/' + name):
-            os.makedirs('G:/xiao/dataset_molcreate/source_image/gen_image/' + name)
+        if not os.path.exists('G:/xiao/dataset_molcreateV2/code/gen_image/'):
+            os.makedirs('G:/xiao/dataset_molcreateV2/code/gen_image/')
+        if not os.path.exists('G:/xiao/dataset_molcreateV2/code/src_image/'):
+            os.makedirs('G:/xiao/dataset_molcreateV2/code/src_image/')
+        if not os.path.exists('G:/xiao/dataset_molcreateV2/code/gen_image/' + name):
+            os.makedirs('G:/xiao/dataset_molcreateV2/code/gen_image/' + name)
+        if not os.path.exists('G:/xiao/dataset_molcreateV2/code/src_image/gen_image/'):
+            os.makedirs('G:/xiao/dataset_molcreateV2/code/src_image/gen_image/')
+        if not os.path.exists('G:/xiao/dataset_molcreateV2/code/src_image/gen_image/' + name):
+            os.makedirs('G:/xiao/dataset_molcreateV2/code/src_image/gen_image/' + name)
 
         text_create(name, add_onecolumn_image('gen_image/' + name + '/1.png', pixel=[10, 70, 130]))
         text_create(name, add_text(random.randint(3, 10)))
@@ -286,20 +292,13 @@ if __name__ == '__main__':
         text_create(name, add_text(random.randint(3, 5)))
         text_create(name, add_text(random.randint(3, 5)))
         text_create(name, add_text(random.randint(2, 4)))
-        text_create(name, add_text(random.randint(2, 4)))
-        text_create(name, add_text(random.randint(2, 4)))
-        text_create(name, add_text(random.randint(1, 3)))
-        text_create(name, add_text(random.randint(1, 3)))
-        text_create(name, add_text(random.randint(3, 5)))
-        text_create(name, add_text(random.randint(3, 5)))
 
         text_create(name, end)
-
         command = 'F:/2345Installs/texliver/2021/bin/win32/pdflatex %s.tex'%(name)
         os.system(command)
         #time.sleep(3)
-        pdf_path = 'G:/xiao/dataset_molcreate/' + '%s.pdf'%(name)
-        convert(pdf_path, outputpath='G:/xiao/dataset_molcreate/create_ann/ann1/' + '%s.pdf'%(name))
+        pdf_path = 'G:/xiao/dataset_molcreateV2/code/' + '%s.pdf'%(name)
+        convert(pdf_path, outputpath='G:/xiao/dataset_molcreateV2/data/create_ann/ann/' + '%s.pdf'%(name))
 
         f = open('%s.tex'%(name), 'r', encoding='utf-8')
         f_new = open('%s.tex'%(name + '_src'), 'w', encoding='utf-8')
@@ -307,7 +306,7 @@ if __name__ == '__main__':
         for line in f:
             # 进行判断
             if "gen_image" in line:
-                line = line.replace('gen_image', 'source_image/gen_image')
+                line = line.replace('gen_image', 'src_image/gen_image')
             # 如果不符合就正常的将文件中的内容读取并且输出到新文件中
             f_new.write(line)
 
@@ -317,8 +316,8 @@ if __name__ == '__main__':
         command = 'F:/2345Installs/texliver/2021/bin/win32/pdflatex %s.tex'%(name + '_src')
         os.system(command)
         #time.sleep(3)
-        pdf_path = 'G:/xiao/dataset_molcreate/' + '%s.pdf'%(name + '_src')
-        convert(pdf_path, outputpath='G:/xiao/dataset_molcreate/create_ann/image1/' + '%s.pdf'%(name))
+        pdf_path = 'G:/xiao/dataset_molcreateV2/code/' + '%s.pdf'%(name + '_src')
+        convert(pdf_path, outputpath='G:/xiao/dataset_molcreateV2/data/create_ann/image/' + '%s.pdf'%(name))
 
         os.remove('%s.tex'%name)
         os.remove('%s.tex' % (name + '_src'))

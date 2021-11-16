@@ -163,8 +163,8 @@ def pinjie(list_path, style, num, image_num, save_path, pixel=60):
             if (i+1) % num == 0:
                 all_length = 0
 
-        result.save('G:/xiao/dataset_molcreate/' + save_path)
-        result_source.save('G:/xiao/dataset_molcreate/source_image/' + save_path)
+        result.save('G:/xiao/dataset_molcreateV2/code/' + save_path)
+        result_source.save('G:/xiao/dataset_molcreateV2/code/src_image/' + save_path)
     else:
         # 宽一样，高相加
         # 图片转化为相同的尺寸
@@ -210,32 +210,32 @@ def pinjie(list_path, style, num, image_num, save_path, pixel=60):
                 all_length = 0
 
         # 保存图片
-        result.save('G:/xiao/dataset_molcreate/' + save_path)
-        result_source.save('G:/xiao/dataset_molcreate/source_image/' + save_path)
+        result.save('G:/xiao/dataset_molcreateV2/code/' + save_path)
+        result_source.save('G:/xiao/dataset_molcreateV2/code/src_image/' + save_path)
     return result
 
-images_path = 'G:/xiao/dataset_molcreate/image/'
-source_path = 'G:/xiao/dataset_molcreate/source/'
-preimage_path = 'G:/xiao/dataset_molcreate/pro_image/'
-
-def getFiles(path):
-    Filelist = []
-    for home, dirs, files in os.walk(path):
-        for file in files:
-            # 文件名列表，包含完整路径
-            Filelist.append(os.path.join(home, file))
-            #Filelist.append(file)
-    return Filelist
-
-def getSubfolder(path):
-    Filelist = []
-    for dirpath, dirnames, filenames in os.walk(path):
-        file_count = 0
-        for file in filenames:
-            file_count = file_count + 1
-        Filelist.append(dirpath)
-        #print(dirpath,file_count)
-    return Filelist
+# images_path = 'G:/xiao/dataset_molcreate/image/'
+# source_path = 'G:/xiao/dataset_molcreate/source/'
+# preimage_path = 'G:/xiao/dataset_molcreate/pro_image/'
+#
+# def getFiles(path):
+#     Filelist = []
+#     for home, dirs, files in os.walk(path):
+#         for file in files:
+#             # 文件名列表，包含完整路径
+#             Filelist.append(os.path.join(home, file))
+#             #Filelist.append(file)
+#     return Filelist
+#
+# def getSubfolder(path):
+#     Filelist = []
+#     for dirpath, dirnames, filenames in os.walk(path):
+#         file_count = 0
+#         for file in filenames:
+#             file_count = file_count + 1
+#         Filelist.append(dirpath)
+#         #print(dirpath,file_count)
+#     return Filelist
 
 # style = 0#random.randint(0, 1)
 # if style == 0:
