@@ -130,7 +130,7 @@ def pinjie(list_path, style, num, image_num, save_path, pixel=60):
             #plt.show()
 
 
-            blur_factor = 13
+            blur_factor = 12
             kernel = np.ones((blur_factor, blur_factor))
             blurred_image_array = binary_erosion(image_np, selem=kernel)
             blurred_image_array = np.where(blurred_image_array == 0, 1, 0)
@@ -191,7 +191,7 @@ def pinjie(list_path, style, num, image_num, save_path, pixel=60):
 
             image_np = np.asarray(image_np).astype(np.float32)
 
-            blur_factor = 13
+            blur_factor = 12
             kernel = np.ones((blur_factor, blur_factor))
             blurred_image_array = binary_erosion(image_np, selem=kernel)
             blurred_image_array = np.where(blurred_image_array == 0, 1, 0)

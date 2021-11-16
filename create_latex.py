@@ -251,17 +251,21 @@ name9 & name10 & name11 \\
         text = text.replace('name11', words[11])
     elif columns == 4:
         text = r'''
+\begin{table*}
+\centering   
 \begin{tabular}{| l | c | c | r |}
 \hline
-name0 & name1 & name2 & name3\\
+name0 & name1 & name2 & name3 \\
 \hline
-name4 & name5 & name6 & name7\\
+name4 & name5 & name6 & name7 \\
 \hline
-name8 & name9 & name10 & name11\\
+name8 & name9 & name10 & name11 \\
 \hline
-name12 & name13 & name14 & name15\\
+name12 & name13 & name14 & name15 \\
 \hline
 \end{tabular}
+\end{table*} 
+
 '''
         text = text.replace('name0', words[0])
         text = text.replace('name1', words[1])
@@ -281,18 +285,76 @@ name12 & name13 & name14 & name15\\
         text = text.replace('name15', words[15])
     else:
         text = r'''
+\begin{table*}
+\centering         
 \begin{tabular}{| l | c | c | c | r |}
 \hline
-name0 & name1 & name2 & name3 & name4\\
+name0 & name1 & name2 & name3 & name4 \\
 \hline
-name5 & name6 & name7 & name8 & name9\\
+name5 & name6 & name7 & name8 & name9 \\
 \hline
-name10 & name11 & name12 & name13 & name14\\
+name10 & name11 & name12 & name13 & name14 \\
 \hline
-name15 & name16 & name17 & name18 & name19\\
+name15 & name16 & name17 & name18 & name19 \\
 \hline
 \end{tabular}
+\end{table*}   
+
 '''
+        text = text.replace('name0', words[0])
+        text = text.replace('name1', words[1])
+        text = text.replace('name2', words[2])
+        text = text.replace('name3', words[3])
+        text = text.replace('name4', words[4])
+        text = text.replace('name5', words[5])
+        text = text.replace('name6', words[6])
+        text = text.replace('name7', words[7])
+        text = text.replace('name8', words[8])
+        text = text.replace('name9', words[9])
+        text = text.replace('name10', words[10])
+        text = text.replace('name11', words[11])
+        text = text.replace('name12', words[12])
+        text = text.replace('name13', words[13])
+        text = text.replace('name14', words[14])
+        text = text.replace('name15', words[15])
+        text = text.replace('name16', words[16])
+        text = text.replace('name17', words[17])
+        text = text.replace('name18', words[18])
+        text = text.replace('name19', words[19])
+    return text
+
+def add_other_image(save_path):
+    files = getFiles(save_path)
+
+    path = files[random.randint(0, len(files)-1)]
+    path = path.split('G:/xiao/dataset_molcreateV2/code/')[1]
+
+    style = random.randint(0, 1)
+    if style == 1:
+        head = r"""
+\begin{figure}[H]
+\centering
+"""
+        end = r"""
+\end{figure}
+"""
+    else:
+        head = r"""
+\begin{figure*}[htbp]
+\centering
+"""
+        end = r"""
+\end{figure*}
+"""
+
+    content = (r"""\includegraphics[width= 0.8\linewidth, keepaspectratio]{%s}""") % (path)
+    li = LoremIpsum()
+    content = content + (r"""
+\caption{%s}
+""") % (li.get_sentences(1))
+
+    text = head + content + end
+
     return text
 
 
@@ -315,14 +377,14 @@ if __name__ == '__main__':
 
         text_create(name, add_onecolumn_image('gen_image/' + name + '/1.png', pixel=[10, 70, 130]))
         text_create(name, add_text(random.randint(3, 10)))
-        text_create(name, add_table(random.randint(2, 6)))
+        text_create(name, add_table(random.randint(2, 3)))
         text_create(name, add_text(random.randint(2, 4)))
         text_create(name, add_text(random.randint(2, 4)))
         text_create(name, add_twocolumn_image('gen_image/' + name + '/2.png', pixel=[20 , 80, 140]))
         text_create(name, add_text(random.randint(2, 4)))
         text_create(name, add_text(random.randint(2, 4)))
         text_create(name, add_text(random.randint(1, 3)))
-        text_create(name, add_table(random.randint(2, 6)))
+        text_create(name, add_table(random.randint(2, 3)))
         text_create(name, add_text(random.randint(1, 3)))
         text_create(name, add_text(random.randint(3, 5)))
         text_create(name, add_text(random.randint(3, 5)))
@@ -333,6 +395,7 @@ if __name__ == '__main__':
         text_create(name, add_text(random.randint(3, 5)))
         text_create(name, add_text(random.randint(2, 4)))
         text_create(name, add_text(random.randint(2, 4)))
+        text_create(name, add_table(random.randint(2, 5)))
         text_create(name, add_text(random.randint(1, 3)))
         text_create(name, add_text(random.randint(1, 3)))
         text_create(name, add_twocolumn_image('gen_image/' + name + '/4.png', pixel=[40, 100, 160]))
@@ -344,9 +407,10 @@ if __name__ == '__main__':
         text_create(name, add_text(random.randint(1, 3)))
         text_create(name, add_text(random.randint(3, 10)))
         text_create(name, add_text(random.randint(3, 5)))
+        text_create(name, add_other_image('G:/xiao/dataset_molcreateV2/code/other_elements/pymol_graphs/'))
         text_create(name, add_text(random.randint(2, 4)))
         text_create(name, add_text(random.randint(2, 4)))
-        text_create(name, add_table(random.randint(2, 6)))
+        text_create(name, add_table(random.randint(2, 5)))
         text_create(name, add_text(random.randint(1, 3)))
         text_create(name, add_text(random.randint(1, 3)))
         text_create(name, add_twocolumn_image('gen_image/' + name + '/5.png', pixel=[50, 110, 170]))
@@ -366,7 +430,7 @@ if __name__ == '__main__':
         text_create(name, add_text(random.randint(2, 4)))
         text_create(name, add_text(random.randint(1, 3)))
         text_create(name, add_text(random.randint(3, 10)))
-        text_create(name, add_table(random.randint(2, 6)))
+        text_create(name, add_table(random.randint(2, 5)))
         text_create(name, add_text(random.randint(3, 10)))
         text_create(name, add_text(random.randint(3, 10)))
         text_create(name, add_twocolumn_image('gen_image/' + name + '/7.png', pixel=[70, 120, 190]))
@@ -379,6 +443,7 @@ if __name__ == '__main__':
         text_create(name, add_text(random.randint(1, 3)))
         text_create(name, add_text(random.randint(1, 3)))
         text_create(name, add_onecolumn_image('gen_image/' + name + '/8.png', pixel=[80, 130, 200]))
+        text_create(name, add_table(random.randint(2, 5)))
         text_create(name, add_text(random.randint(3, 5)))
         text_create(name, add_text(random.randint(2, 4)))
         text_create(name, add_text(random.randint(2, 4)))
@@ -388,7 +453,7 @@ if __name__ == '__main__':
         text_create(name, add_text(random.randint(1, 3)))
         text_create(name, add_text(random.randint(1, 3)))
         text_create(name, add_text(random.randint(3, 5)))
-        text_create(name, add_table(random.randint(2, 6)))
+        text_create(name, add_table(random.randint(2, 5)))
         text_create(name, add_text(random.randint(3, 5)))
         text_create(name, add_text(random.randint(2, 4)))
         text_create(name, add_text(random.randint(2, 4)))
@@ -396,7 +461,9 @@ if __name__ == '__main__':
         text_create(name, add_text(random.randint(1, 3)))
         text_create(name, add_text(random.randint(1, 3)))
         text_create(name, add_text(random.randint(3, 5)))
+        text_create(name, add_other_image('G:/xiao/dataset_molcreateV2/code/other_elements/pymol_graphs/'))
         text_create(name, add_text(random.randint(3, 5)))
+        text_create(name, add_table(random.randint(2, 5)))
         text_create(name, add_text(random.randint(3, 5)))
         text_create(name, add_text(random.randint(2, 4)))
 
