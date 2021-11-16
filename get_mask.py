@@ -15,7 +15,6 @@ import random
 import pickle
 import h5py
 import SimpleITK
-import complete_structure
 from skimage import data,color,morphology
 import time
 
@@ -118,10 +117,6 @@ def mask_annjson(path):
     segmentation_id = 1
     print(len(files))
     for i, file in enumerate(tqdm(files)):
-        #start = time.time()
-        #print(start, file)
-        # if file != 'G:/xiao/dataset_molcreate/create_ann/image/1635312674.pdf/1635312674_src.pdf_2.png':
-        #     continue
         img = Image.open(file)
         masked_image = np.array(img).copy()
         mask_label = False
@@ -141,9 +136,7 @@ def mask_annjson(path):
         for value in values:
             # 判断第一个有没有，没有就跳过
             arr = image_np.reshape(-1, 3)
-
             labels = (arr == [value[0], value[1], value[2]]).all(1)
-
             if len(set(labels)) == 1:
                 continue
 
@@ -168,8 +161,6 @@ def mask_annjson(path):
                 labels_arr = morphology.convex_hull_image(labels_arr)
                 labels_arr = np.where(labels_arr == True, 1, 0)
                 mask_array1 = labels_arr.reshape((labels_arr.shape[0], labels_arr.shape[1], 1))
-                gt_masks = mask_array1#complete_structure.complete_structure_mask(image_array=np.array(image_alone), mask_array=np.array(mask_array1), debug=False)
-                labels_arr = gt_masks.reshape(image_np[:, :, 0].shape)
                 '''
 
                 mask_array.append(labels_arr)
@@ -235,25 +226,6 @@ def mask_annjson(path):
 
 import concurrent.futures
 if __name__ == "__main__":
-    path = 'G:/xiao/dataset_molcreate/create_ann/'
-    # mask_annjson(path)
-    '''
-    with open(path + "16353126451_ins.pkl", 'rb') as f:
-        # 反序列化解析成列表a
-        a = pickle.load(f)
-
-    print(a['image_name'])
-    print(a['mask_array'].shape)
-
-    filename = path + '1635312645_1.nii.gz'
-    img = SimpleITK.ReadImage(filename)  # SimpleITK object
-    data = SimpleITK.GetArrayFromImage(img)  # numpy array
-    print(data.shape)
-    if a['mask_array'].all() == data.all():
-        print('same')
-    for i in range(data.shape[0]):
-        plt.imshow(data[i])
-        plt.show()
-    '''
+    path = 'G:/xiao/dataset_molcreateV2/data/create_ann/'
     with concurrent.futures.ProcessPoolExecutor() as executor:
         executor.submit(mask_annjson, path)

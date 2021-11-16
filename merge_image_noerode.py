@@ -1,3 +1,5 @@
+# pinjie image with no erode
+
 from os import listdir
 from PIL import Image
 import os

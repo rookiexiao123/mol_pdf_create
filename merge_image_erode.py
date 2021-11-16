@@ -1,3 +1,5 @@
+# pinjie image with erode
+
 from os import listdir
 from PIL import Image
 import os
@@ -5,10 +7,8 @@ import math
 import random
 import matplotlib.pyplot as plt
 import numpy as np
-import complete_structure
 from skimage import data,color,morphology
 import cv2
-import time
 import colorsys
 from skimage.morphology import binary_erosion
 
@@ -130,7 +130,7 @@ def pinjie(list_path, style, num, image_num, save_path, pixel=60):
             #plt.show()
 
 
-            blur_factor = 11
+            blur_factor = 13
             kernel = np.ones((blur_factor, blur_factor))
             blurred_image_array = binary_erosion(image_np, selem=kernel)
             blurred_image_array = np.where(blurred_image_array == 0, 1, 0)
@@ -142,8 +142,6 @@ def pinjie(list_path, style, num, image_num, save_path, pixel=60):
             # chull = np.where(chull == True, 1, 0)
             # chull = chull.reshape((chull.shape[0], chull.shape[1], 1))
 
-            # gt_masks = complete_structure.complete_structure_mask(image_array=img_array, mask_array=chull, debug=False)
-            # gt_masks = gt_masks.reshape(img_array[:, :, 0].shape)
 
             # colors = random_colors(50)
             # color = colors[random.randint(0, 50)]
@@ -193,7 +191,7 @@ def pinjie(list_path, style, num, image_num, save_path, pixel=60):
 
             image_np = np.asarray(image_np).astype(np.float32)
 
-            blur_factor = 11
+            blur_factor = 13
             kernel = np.ones((blur_factor, blur_factor))
             blurred_image_array = binary_erosion(image_np, selem=kernel)
             blurred_image_array = np.where(blurred_image_array == 0, 1, 0)

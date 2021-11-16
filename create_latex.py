@@ -2,10 +2,10 @@
 # create new pdf, pdf2png, save png
 
 import os
-from random_words import LoremIpsum
+from random_words import LoremIpsum, RandomWords
 import random
 import cv2
-from dataset_image1 import pinjie
+from merge_image_erode import pinjie
 import time
 from pdf_2_img_Convert import convert
 
@@ -21,7 +21,8 @@ head = r"""
 \usepackage{float}
 \usepackage{caption}
 \usepackage{geometry}
-
+\usepackage{xcolor}
+\usepackage{colortbl,booktabs}
 %\geometry{a4paper,left=2cm,right=2cm,top=1cm,bottom=1cm}
 \geometry{a4paper,scale=0.8}
 \setlength{\columnsep}{22pt}  
@@ -194,6 +195,107 @@ def add_twocolumn_image(save_path, pixel):
     text = head + content + end
     return text
 
+def add_table(columns):
+    rw = RandomWords()
+    words = rw.random_words(count=20)
+
+    if columns == 2:
+        text = r'''
+\begin{tabular}{| c | c |}
+\hline
+name0 & name1 \\
+\hline
+name2 & name3 \\
+\hline
+name4 & name5 \\
+\hline
+name6 & name7 \\
+\hline
+\end{tabular}
+
+'''
+        text = text.replace('name0', words[0])
+        text = text.replace('name1', words[1])
+        text = text.replace('name2', words[2])
+        text = text.replace('name3', words[3])
+        text = text.replace('name4', words[4])
+        text = text.replace('name5', words[5])
+        text = text.replace('name6', words[6])
+        text = text.replace('name7', words[7])
+    elif columns == 3:
+        text = r'''
+\begin{tabular}{| l | c | r |}
+\hline
+name0 & name1 & name2 \\
+\hline
+name3 & name4 & name5  \\
+\hline
+name6 & name7 & name8 \\
+\hline
+name9 & name10 & name11 \\
+\hline
+\end{tabular}
+
+'''
+        text = text.replace('name0', words[0])
+        text = text.replace('name1', words[1])
+        text = text.replace('name2', words[2])
+        text = text.replace('name3', words[3])
+        text = text.replace('name4', words[4])
+        text = text.replace('name5', words[5])
+        text = text.replace('name6', words[6])
+        text = text.replace('name7', words[7])
+        text = text.replace('name8', words[8])
+        text = text.replace('name9', words[9])
+        text = text.replace('name10', words[10])
+        text = text.replace('name11', words[11])
+    elif columns == 4:
+        text = r'''
+\begin{tabular}{| l | c | c | r |}
+\hline
+name0 & name1 & name2 & name3\\
+\hline
+name4 & name5 & name6 & name7\\
+\hline
+name8 & name9 & name10 & name11\\
+\hline
+name12 & name13 & name14 & name15\\
+\hline
+\end{tabular}
+'''
+        text = text.replace('name0', words[0])
+        text = text.replace('name1', words[1])
+        text = text.replace('name2', words[2])
+        text = text.replace('name3', words[3])
+        text = text.replace('name4', words[4])
+        text = text.replace('name5', words[5])
+        text = text.replace('name6', words[6])
+        text = text.replace('name7', words[7])
+        text = text.replace('name8', words[8])
+        text = text.replace('name9', words[9])
+        text = text.replace('name10', words[10])
+        text = text.replace('name11', words[11])
+        text = text.replace('name12', words[12])
+        text = text.replace('name13', words[13])
+        text = text.replace('name14', words[14])
+        text = text.replace('name15', words[15])
+    else:
+        text = r'''
+\begin{tabular}{| l | c | c | c | r |}
+\hline
+name0 & name1 & name2 & name3 & name4\\
+\hline
+name5 & name6 & name7 & name8 & name9\\
+\hline
+name10 & name11 & name12 & name13 & name14\\
+\hline
+name15 & name16 & name17 & name18 & name19\\
+\hline
+\end{tabular}
+'''
+    return text
+
+
 if __name__ == '__main__':
     i = 0
     while(i < 1500):
@@ -213,12 +315,14 @@ if __name__ == '__main__':
 
         text_create(name, add_onecolumn_image('gen_image/' + name + '/1.png', pixel=[10, 70, 130]))
         text_create(name, add_text(random.randint(3, 10)))
+        text_create(name, add_table(random.randint(2, 6)))
         text_create(name, add_text(random.randint(2, 4)))
         text_create(name, add_text(random.randint(2, 4)))
         text_create(name, add_twocolumn_image('gen_image/' + name + '/2.png', pixel=[20 , 80, 140]))
         text_create(name, add_text(random.randint(2, 4)))
         text_create(name, add_text(random.randint(2, 4)))
         text_create(name, add_text(random.randint(1, 3)))
+        text_create(name, add_table(random.randint(2, 6)))
         text_create(name, add_text(random.randint(1, 3)))
         text_create(name, add_text(random.randint(3, 5)))
         text_create(name, add_text(random.randint(3, 5)))
@@ -242,6 +346,7 @@ if __name__ == '__main__':
         text_create(name, add_text(random.randint(3, 5)))
         text_create(name, add_text(random.randint(2, 4)))
         text_create(name, add_text(random.randint(2, 4)))
+        text_create(name, add_table(random.randint(2, 6)))
         text_create(name, add_text(random.randint(1, 3)))
         text_create(name, add_text(random.randint(1, 3)))
         text_create(name, add_twocolumn_image('gen_image/' + name + '/5.png', pixel=[50, 110, 170]))
@@ -261,6 +366,7 @@ if __name__ == '__main__':
         text_create(name, add_text(random.randint(2, 4)))
         text_create(name, add_text(random.randint(1, 3)))
         text_create(name, add_text(random.randint(3, 10)))
+        text_create(name, add_table(random.randint(2, 6)))
         text_create(name, add_text(random.randint(3, 10)))
         text_create(name, add_text(random.randint(3, 10)))
         text_create(name, add_twocolumn_image('gen_image/' + name + '/7.png', pixel=[70, 120, 190]))
@@ -282,6 +388,7 @@ if __name__ == '__main__':
         text_create(name, add_text(random.randint(1, 3)))
         text_create(name, add_text(random.randint(1, 3)))
         text_create(name, add_text(random.randint(3, 5)))
+        text_create(name, add_table(random.randint(2, 6)))
         text_create(name, add_text(random.randint(3, 5)))
         text_create(name, add_text(random.randint(2, 4)))
         text_create(name, add_text(random.randint(2, 4)))
