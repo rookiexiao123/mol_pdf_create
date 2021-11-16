@@ -201,6 +201,7 @@ def add_table(columns):
 
     if columns == 2:
         text = r'''
+\centering        
 \begin{tabular}{| c | c |}
 \hline
 name0 & name1 \\
@@ -224,6 +225,7 @@ name6 & name7 \\
         text = text.replace('name7', words[7])
     elif columns == 3:
         text = r'''
+\centering        
 \begin{tabular}{| l | c | r |}
 \hline
 name0 & name1 & name2 \\

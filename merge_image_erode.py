@@ -12,6 +12,15 @@ import cv2
 import colorsys
 from skimage.morphology import binary_erosion
 
+def getFiles(path):
+    Filelist = []
+    for home, dirs, files in os.walk(path):
+        for file in files:
+            # 文件名列表，包含完整路径
+            file_path = os.path.join(home, file).replace('\\', '/')
+            Filelist.append(file_path)
+            #Filelist.append(file)
+    return Filelist
 
 def random_colors(N, bright=True):
     """
@@ -61,6 +70,20 @@ def extract_bboxes(mask):
         boxes[i] = np.array([y1, x1, y2, x2])
     return boxes.astype(np.int32)
 
+# 按比例resize Image
+def resize_image(path, length):
+    img = cv2.imread(path)
+    h, w, _ = img.shape
+
+    if h >= w:
+        width = length * w / h
+        height = length
+
+    else:
+        height = length * h / w
+        width = length
+
+    return height, width
 
 # style == 0, height is the same, add the width; style == 1, widht is the same, add the height;
 # num: image number per column
@@ -96,6 +119,21 @@ def pinjie(list_path, style, num, image_num, save_path, pixel=60):
         # 拼接图片
         all_length = 0
         for i, im in enumerate(im_list):
+            if i == random.randint(0, 20):
+                files = getFiles('G:/xiao/dataset_molcreateV2/code/other_elements/arrow/')
+                path = files[random.randint(0, len(files) - 1)]
+                img = Image.open(path).convert('RGB')
+                img = np.where(np.array(img)==0, 255, 0)
+                img = Image.fromarray(img.astype('uint8')).convert('RGB')
+                img = img.resize((im.size[0], im.size[1]))
+
+                result_source.paste(img, box=(all_length, im_list[0].size[1] * math.floor(i / num)))
+                result.paste(img, box=(all_length, im_list[0].size[1] * math.floor(i/num)))
+                all_length = all_length + im.size[0]
+                if (i+1) % num == 0:
+                    all_length = 0
+                continue
+
             result_source.paste(im, box=(all_length, im_list[0].size[1] * math.floor(i/num)))
 
             img_array = np.array(im)
@@ -185,6 +223,21 @@ def pinjie(list_path, style, num, image_num, save_path, pixel=60):
         # 拼接图片
         all_length = 0
         for i, im in enumerate(im_list):
+            if i == random.randint(0, 20):
+                files = getFiles('G:/xiao/dataset_molcreateV2/code/other_elements/arrow/')
+                path = files[random.randint(0, len(files) - 1)]
+                img = Image.open(path).convert('RGB')
+                img = np.where(np.array(img)==0, 255, 0)
+                img = Image.fromarray(img.astype('uint8')).convert('RGB')
+                img = img.resize((im.size[0], im.size[1]))
+
+                result_source.paste(img, box=(im_list[0].size[0] * math.floor(i / num), all_length))
+                result.paste(img, box=(im_list[0].size[0] * math.floor(i / num), all_length))
+                all_length = all_length + im.size[1]
+                if (i + 1) % num == 0:
+                    all_length = 0
+                continue
+
             result_source.paste(im, box=(im_list[0].size[0] * math.floor(i / num), all_length))
             img_array = np.array(im)
             image_np = np.where(np.array(im.convert('L')) <= 150, 0, 1)
