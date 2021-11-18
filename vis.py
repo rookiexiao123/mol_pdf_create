@@ -33,7 +33,7 @@ if __name__ == "__main__":
     values = [[10, 70, 130], [20 , 80, 140], [30, 90, 150], [40, 100, 160], [50, 110, 170], [60, 120, 180], [70, 120, 190], [80, 130, 200]]
     for value in values:
         for i in range(10):
-            image = Image.open('G:/xiao/dataset_molcreateV2/data/vis_show/1.png')
+            image = Image.open('G:/xiao/dataset_molcreateV2/data/vis_show/2.png')
 
             image_np = np.array(image)
             arr = image_np.reshape(-1,3)
@@ -71,10 +71,10 @@ if __name__ == "__main__":
                 pass
             else:
                 print(value[0] + i, labels.shape, len(labels.astype(np.int8)[labels == True]), len(set(labels)), set(labels))
-                image_np = Image.fromarray(new_arr.astype('uint8')).convert('1')
+                image_np = Image.fromarray(new_arr.astype('uint8')).convert('RGB')
 
                 new_arr = np.where(new_arr==[255, 255, 255], 255, 0)
-                plt.imshow(new_arr)
+                plt.imshow(image_np)
                 plt.show()
 
                 # image_np = image_np.resize((image_np.size[0]//4, image_np.size[1]//4), Image.ANTIALIAS)

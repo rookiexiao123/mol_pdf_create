@@ -1,4 +1,6 @@
 import os
+from PIL import Image
+
 def myrename(path):
     file_list=os.listdir(path)
     for i,fi in enumerate(file_list):
@@ -16,3 +18,4 @@ def myrename(path):
 if __name__=="__main__":
     path="G:/xiao/dataset_molcreateV2/code/other_elements/arrow/"
     myrename(path)
+

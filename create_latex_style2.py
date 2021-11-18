@@ -8,29 +8,29 @@ import cv2
 from merge_image_erode import pinjie
 import time
 from pdf_2_img_Convert import convert
+import codecs
 
 current_dir = os.path.dirname(__file__)
 
 preimage_path = 'G:/xiao/dataset_molcreateV2/data/pre_image/'
 
 head = r"""
-\documentclass[a4paper]{article}
+\documentclass[9pt]{article}
+\usepackage[letterpaper,left=6.9cm,right=1.9cm,top=3.1cm,bottom=2.3cm]{geometry} % Márgenes y demás
 
-\usepackage{graphicx}
-\usepackage{multicol}
-\usepackage{float}
-\usepackage{caption}
-\usepackage{geometry}
 
-%\geometry{a4paper,left=2cm,right=2cm,top=1cm,bottom=1cm}
-\geometry{a4paper,scale=0.8}
-\setlength{\columnsep}{22pt}  
+\input{Styles_ACCEFN.sty}  %%Llama el archivo de los estilos
+
+
+\setlength{\topskip}{0.5cm}
+\setlength{\parindent}{0mm}
+
+
+%%%%%% Inicio del documento
 \begin{document}
-\begin{multicols}{2}
 """
 
 end = r"""
-\end{multicols}
 \end{document}
 """
 
@@ -200,16 +200,16 @@ def add_table(columns):
     if columns == 2:
         text = r'''
 \begin{table}[H]
-\centering
-\setlength{\tabcolsep}{7mm}{        
+\centering 
+\setlength{\tabcolsep}{7mm}{          
 \begin{tabular}{| c | c |}
 \hline
 name0 & name1 \\
 \hline
 name2 & name3 \\
-\hline
+
 name4 & name5 \\
-\hline
+
 name6 & name7 \\
 \hline
 \end{tabular}}
@@ -227,18 +227,19 @@ name6 & name7 \\
     elif columns == 3:
         text = r'''
 \begin{table}[H]
-\centering       
+\centering    
+\setlength{\tabcolsep}{7mm}{       
 \begin{tabular}{| l | c | r |}
 \hline
 name0 & name1 & name2 \\
 \hline
 name3 & name4 & name5  \\
-\hline
+
 name6 & name7 & name8 \\
-\hline
+
 name9 & name10 & name11 \\
 \hline
-\end{tabular}
+\end{tabular}}
 \end{table}
 '''
         text = text.replace('name0', words[0])
@@ -256,16 +257,16 @@ name9 & name10 & name11 \\
     elif columns == 4:
         text = r'''
 \begin{table*}[H]
-\centering 
-\setlength{\tabcolsep}{7mm}{    
+\centering   
+\setlength{\tabcolsep}{7mm}{   
 \begin{tabular}{| l | c | c | r |}
 \hline
 name0 & name1 & name2 & name3 \\
 \hline
 name4 & name5 & name6 & name7 \\
-\hline
+
 name8 & name9 & name10 & name11 \\
-\hline
+
 name12 & name13 & name14 & name15 \\
 \hline
 \end{tabular}}
@@ -291,8 +292,8 @@ name12 & name13 & name14 & name15 \\
     else:
         text = r'''
 \begin{table*}[H]
-\centering    
-\setlength{\tabcolsep}{7mm}{       
+\centering      
+\setlength{\tabcolsep}{7mm}{      
 \begin{tabular}{| l | c | c | c | r |}
 \hline
 name0 & name1 & name2 & name3 & name4 \\
@@ -381,7 +382,7 @@ if __name__ == '__main__':
         if not os.path.exists('G:/xiao/dataset_molcreateV2/code/src_image/gen_image/' + name):
             os.makedirs('G:/xiao/dataset_molcreateV2/code/src_image/gen_image/' + name)
 
-        text_create(name, add_onecolumn_image('gen_image/' + name + '/1.png', pixel=[10, 70, 130]))
+        text_create(name, add_twocolumn_image('gen_image/' + name + '/1.png', pixel=[10, 70, 130]))
         for t in range(1, 3):
             text_create(name, add_text(random.randint(2, 8)))
 
@@ -415,7 +416,7 @@ if __name__ == '__main__':
         for t in range(2, 8):
             text_create(name, add_text(random.randint(2, 8)))
 
-        text_create(name, add_onecolumn_image('gen_image/' + name + '/8.png', pixel=[80, 130, 200]))
+        text_create(name, add_twocolumn_image('gen_image/' + name + '/8.png', pixel=[80, 130, 200]))
         text_create(name, add_table(random.randint(2, 5)))
         text_create(name, add_other_image('G:/xiao/dataset_molcreateV2/code/other_elements/pymol_graphs/'))
         for t in range(2, 8):
@@ -428,8 +429,8 @@ if __name__ == '__main__':
         pdf_path = 'G:/xiao/dataset_molcreateV2/code/' + '%s.pdf'%(name)
         convert(pdf_path, outputpath='G:/xiao/dataset_molcreateV2/data/create_ann/ann/' + '%s.pdf'%(name))
 
-        f = open('%s.tex'%(name), 'r', encoding='utf-8')
-        f_new = open('%s.tex'%(name + '_src'), 'w', encoding='utf-8')
+        f = codecs.open('%s.tex'%(name), 'r', encoding='utf-8', errors='ignore')
+        f_new = codecs.open('%s.tex'%(name + '_src'), 'w', encoding='utf-8', errors='ignore')
 
         for line in f:
             # 进行判断
@@ -455,5 +456,5 @@ if __name__ == '__main__':
         os.remove('%s.log' % (name + '_src'))
         os.remove('%s.aux' % name)
         os.remove('%s.aux' % (name + '_src'))
-        # os.remove('%s.out' % name)
-        # os.remove('%s.out' % (name + '_src'))
+        os.remove('%s.out' % name)
+        os.remove('%s.out' % (name + '_src'))

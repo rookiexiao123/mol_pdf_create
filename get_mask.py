@@ -144,7 +144,7 @@ def mask_annjson(path):
                 labels = (arr == [value[0] + j, value[1] + j, value[2] + j]).all(1)
 
                 if len(set(labels)) == 1:
-                    break
+                    continue
                 if len(labels.astype(np.int8)[labels == True]) < 50:
                     continue
                 '''

@@ -119,12 +119,11 @@ def pinjie(list_path, style, num, image_num, save_path, pixel=60):
         # 拼接图片
         all_length = 0
         for i, im in enumerate(im_list):
-            if i == random.randint(0, 20):
-                files = getFiles('G:/xiao/dataset_molcreateV2/code/other_elements/arrow/')
+            if i == random.randint(1, 10):
+                files = getFiles('G:/xiao/dataset_molcreateV2/code/other_elements/')
+
                 path = files[random.randint(0, len(files) - 1)]
-                img = Image.open(path).convert('RGB')
-                img = np.where(np.array(img)==0, 255, 0)
-                img = Image.fromarray(img.astype('uint8')).convert('RGB')
+                img = Image.open(path)
                 img = img.resize((im.size[0], im.size[1]))
 
                 result_source.paste(img, box=(all_length, im_list[0].size[1] * math.floor(i / num)))
@@ -223,12 +222,11 @@ def pinjie(list_path, style, num, image_num, save_path, pixel=60):
         # 拼接图片
         all_length = 0
         for i, im in enumerate(im_list):
-            if i == random.randint(0, 20):
-                files = getFiles('G:/xiao/dataset_molcreateV2/code/other_elements/arrow/')
+            if i == random.randint(1, 10):
+                files = getFiles('G:/xiao/dataset_molcreateV2/code/other_elements/')
+
                 path = files[random.randint(0, len(files) - 1)]
-                img = Image.open(path).convert('RGB')
-                img = np.where(np.array(img)==0, 255, 0)
-                img = Image.fromarray(img.astype('uint8')).convert('RGB')
+                img = Image.open(path)
                 img = img.resize((im.size[0], im.size[1]))
 
                 result_source.paste(img, box=(im_list[0].size[0] * math.floor(i / num), all_length))
