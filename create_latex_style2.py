@@ -93,6 +93,8 @@ def add_onecolumn_image(save_path, pixel):
 
     if len(files) > 10:
         image_num = random.randint(6, 10)
+    elif len(files) > 5:
+        image_num = random.randint(3, len(files))
     else:
         image_num = random.randint(1, len(files))
 
@@ -100,7 +102,7 @@ def add_onecolumn_image(save_path, pixel):
         num = random.randint(1, 5)
     else:
         num = random.randint(1, image_num)
-    #print(folders[sequence], num, len(files))
+
     img = pinjie(pinjie_path, style=style, num=num, image_num=image_num, save_path=save_path, pixel=pixel)
     w, h = img.size
     while((h / w >= 2) or w > 4000):
@@ -165,7 +167,9 @@ def add_twocolumn_image(save_path, pixel):
         files = getFiles(folders[sequence])
 
         if len(files) > 10:
-            image_num = random.randint(1, 10)
+            image_num = random.randint(6, 10)
+        elif len(files) > 5:
+            image_num = random.randint(3, len(files))
         else:
             image_num = random.randint(1, len(files))
 
@@ -256,7 +260,7 @@ name9 & name10 & name11 \\
         text = text.replace('name11', words[11])
     elif columns == 4:
         text = r'''
-\begin{table*}[H]
+\begin{table*}[htbp]
 \centering   
 \setlength{\tabcolsep}{7mm}{   
 \begin{tabular}{| l | c | c | r |}
@@ -291,7 +295,7 @@ name12 & name13 & name14 & name15 \\
         text = text.replace('name15', words[15])
     else:
         text = r'''
-\begin{table*}[H]
+\begin{table*}[htbp]
 \centering      
 \setlength{\tabcolsep}{7mm}{      
 \begin{tabular}{| l | c | c | c | r |}

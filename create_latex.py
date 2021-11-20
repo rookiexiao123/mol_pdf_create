@@ -21,7 +21,7 @@ head = r"""
 \usepackage{float}
 \usepackage{caption}
 \usepackage{geometry}
-
+\usepackage{color}
 %\geometry{a4paper,left=2cm,right=2cm,top=1cm,bottom=1cm}
 \geometry{a4paper,scale=0.8}
 \setlength{\columnsep}{22pt}  
@@ -77,7 +77,9 @@ def add_text(num):
     text = li.get_sentences(num)
     text = text + r"""
 
-"""
+\noindent {\color{%s}\rule[-2pt]{%dcm}{%fem}}    
+
+"""%(random.choice(['red', 'black', 'green', 'blue', 'yellow', 'cyan', 'magenta']), random.randint(3, 8), random.uniform(0.05, 0.3))
     return text
 
 def add_onecolumn_image(save_path, pixel):
@@ -93,14 +95,16 @@ def add_onecolumn_image(save_path, pixel):
 
     if len(files) > 10:
         image_num = random.randint(6, 10)
+    elif len(files) > 5:
+        image_num = random.randint(3, len(files))
     else:
         image_num = random.randint(1, len(files))
 
     if image_num > 5:
-        num = random.randint(1, 5)
+        num = random.randint(3, 5)
     else:
         num = random.randint(1, image_num)
-    #print(folders[sequence], num, len(files))
+
     img = pinjie(pinjie_path, style=style, num=num, image_num=image_num, save_path=save_path, pixel=pixel)
     w, h = img.size
     while((h / w >= 2) or w > 4000):
@@ -148,6 +152,8 @@ def add_twocolumn_image(save_path, pixel):
 
     if len(files) > 10:
         image_num = random.randint(6, 10)
+    elif len(files) > 5:
+        image_num = random.randint(3, len(files))
     else:
         image_num = random.randint(1, len(files))
 
@@ -193,140 +199,65 @@ def add_twocolumn_image(save_path, pixel):
     text = head + content + end
     return text
 
-def add_table(columns):
+def add_table(columns, rows):
     rw = RandomWords()
-    words = rw.random_words(count=20)
+    words = rw.random_words(count=columns*rows)
 
-    if columns == 2:
-        text = r'''
+    if columns <= 3:
+        head = r'''
 \begin{table}[H]
 \centering
-\setlength{\tabcolsep}{7mm}{        
-\begin{tabular}{| c | c |}
+\setlength{\tabcolsep}{%dmm}{        
+\begin{tabular}{%s}
 \hline
-name0 & name1 \\
-\hline
-name2 & name3 \\
-\hline
-name4 & name5 \\
-\hline
-name6 & name7 \\
-\hline
+'''%(random.randint(3, 15), ' c ' * columns)
+        content_string = ''
+        for row in range(rows):
+            string = ''
+            for column in range(columns):
+                string = string + words[column*row + column]
+                if column < (columns-1):
+                    string = string + ' & '
+            string = string + r' \\'
+            content_string = content_string + string
+        content = r'''
+%s
+'''%(content_string)
+
+        end = r'''
 \end{tabular}}
 \end{table}
-
+                   
 '''
-        text = text.replace('name0', words[0])
-        text = text.replace('name1', words[1])
-        text = text.replace('name2', words[2])
-        text = text.replace('name3', words[3])
-        text = text.replace('name4', words[4])
-        text = text.replace('name5', words[5])
-        text = text.replace('name6', words[6])
-        text = text.replace('name7', words[7])
-    elif columns == 3:
-        text = r'''
-\begin{table}[H]
-\centering       
-\begin{tabular}{| l | c | r |}
-\hline
-name0 & name1 & name2 \\
-\hline
-name3 & name4 & name5  \\
-\hline
-name6 & name7 & name8 \\
-\hline
-name9 & name10 & name11 \\
-\hline
-\end{tabular}
-\end{table}
-'''
-        text = text.replace('name0', words[0])
-        text = text.replace('name1', words[1])
-        text = text.replace('name2', words[2])
-        text = text.replace('name3', words[3])
-        text = text.replace('name4', words[4])
-        text = text.replace('name5', words[5])
-        text = text.replace('name6', words[6])
-        text = text.replace('name7', words[7])
-        text = text.replace('name8', words[8])
-        text = text.replace('name9', words[9])
-        text = text.replace('name10', words[10])
-        text = text.replace('name11', words[11])
-    elif columns == 4:
-        text = r'''
-\begin{table*}[H]
-\centering 
-\setlength{\tabcolsep}{7mm}{    
-\begin{tabular}{| l | c | c | r |}
-\hline
-name0 & name1 & name2 & name3 \\
-\hline
-name4 & name5 & name6 & name7 \\
-\hline
-name8 & name9 & name10 & name11 \\
-\hline
-name12 & name13 & name14 & name15 \\
-\hline
-\end{tabular}}
-\end{table*} 
-
-'''
-        text = text.replace('name0', words[0])
-        text = text.replace('name1', words[1])
-        text = text.replace('name2', words[2])
-        text = text.replace('name3', words[3])
-        text = text.replace('name4', words[4])
-        text = text.replace('name5', words[5])
-        text = text.replace('name6', words[6])
-        text = text.replace('name7', words[7])
-        text = text.replace('name8', words[8])
-        text = text.replace('name9', words[9])
-        text = text.replace('name10', words[10])
-        text = text.replace('name11', words[11])
-        text = text.replace('name12', words[12])
-        text = text.replace('name13', words[13])
-        text = text.replace('name14', words[14])
-        text = text.replace('name15', words[15])
     else:
-        text = r'''
-\begin{table*}[H]
-\centering    
-\setlength{\tabcolsep}{7mm}{       
-\begin{tabular}{| l | c | c | c | r |}
-\hline
-name0 & name1 & name2 & name3 & name4 \\
-\hline
-name5 & name6 & name7 & name8 & name9 \\
+        head = r'''
+\begin{table*}[htbp]
+\centering 
+\setlength{\tabcolsep}{%dmm}{    
+\begin{tabular}{%s}
+\hline'''%(random.randint(3, 20), ' c ' * columns)
 
-name10 & name11 & name12 & name13 & name14 \\
+        content_string = ''
+        for row in range(rows):
+            string = ''
+            for column in range(columns):
+                string = string + words[column * row + column]
+                if column < (columns - 1):
+                    string = string + ' & '
+            string = string + r' \\'
+            if row == 0:
+                string = string + ' \hline '
+            content_string = content_string + string
+        content = r'''
+        %s
+        ''' % (content_string)
 
-name15 & name16 & name17 & name18 & name19 \\
-\hline
+        end = r'''
 \end{tabular}}
-\end{table*}   
+\end{table*}
 
 '''
-        text = text.replace('name0', words[0])
-        text = text.replace('name1', words[1])
-        text = text.replace('name2', words[2])
-        text = text.replace('name3', words[3])
-        text = text.replace('name4', words[4])
-        text = text.replace('name5', words[5])
-        text = text.replace('name6', words[6])
-        text = text.replace('name7', words[7])
-        text = text.replace('name8', words[8])
-        text = text.replace('name9', words[9])
-        text = text.replace('name10', words[10])
-        text = text.replace('name11', words[11])
-        text = text.replace('name12', words[12])
-        text = text.replace('name13', words[13])
-        text = text.replace('name14', words[14])
-        text = text.replace('name15', words[15])
-        text = text.replace('name16', words[16])
-        text = text.replace('name17', words[17])
-        text = text.replace('name18', words[18])
-        text = text.replace('name19', words[19])
+    text = head + content + end
     return text
 
 def add_other_image(save_path):
@@ -385,8 +316,8 @@ if __name__ == '__main__':
         for t in range(1, 3):
             text_create(name, add_text(random.randint(2, 8)))
 
+        text_create(name, add_table(random.randint(2, 10), random.randint(3, 14)))
         text_create(name, add_twocolumn_image('gen_image/' + name + '/2.png', pixel=[20 , 80, 140]))
-        text_create(name, add_table(random.randint(2, 5)))
         for t in range(2, 8):
             text_create(name, add_text(random.randint(2, 8)))
 
@@ -396,13 +327,13 @@ if __name__ == '__main__':
 
         text_create(name, add_twocolumn_image('gen_image/' + name + '/4.png', pixel=[40, 100, 160]))
         text_create(name, add_other_image('G:/xiao/dataset_molcreateV2/code/other_elements/pymol_graphs/'))
-        text_create(name, add_table(random.randint(2, 5)))
+        text_create(name, add_table(random.randint(2, 10), random.randint(3, 14)))
         for t in range(2, 8):
             text_create(name, add_text(random.randint(2, 8)))
 
         text_create(name, add_other_image('G:/xiao/dataset_molcreateV2/code/other_elements/pymol_graphs/'))
         text_create(name, add_twocolumn_image('gen_image/' + name + '/5.png', pixel=[50, 110, 170]))
-        text_create(name, add_table(random.randint(2, 5)))
+        text_create(name, add_table(random.randint(2, 10), random.randint(3, 14)))
         for t in range(2, 8):
             text_create(name, add_text(random.randint(2, 8)))
 
@@ -412,11 +343,12 @@ if __name__ == '__main__':
 
         text_create(name, add_twocolumn_image('gen_image/' + name + '/7.png', pixel=[70, 120, 190]))
         text_create(name, add_other_image('G:/xiao/dataset_molcreateV2/code/other_elements/pymol_graphs/'))
+        text_create(name, add_table(random.randint(2, 10), random.randint(3, 14)))
         for t in range(2, 8):
             text_create(name, add_text(random.randint(2, 8)))
 
         text_create(name, add_onecolumn_image('gen_image/' + name + '/8.png', pixel=[80, 130, 200]))
-        text_create(name, add_table(random.randint(2, 5)))
+        text_create(name, add_table(random.randint(2, 10), random.randint(3, 14)))
         text_create(name, add_other_image('G:/xiao/dataset_molcreateV2/code/other_elements/pymol_graphs/'))
         for t in range(2, 8):
             text_create(name, add_text(random.randint(2, 8)))

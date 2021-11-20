@@ -103,24 +103,24 @@ def pinjie(list_path, style, num, image_num, save_path, pixel=60):
         # 图片转化为相同的尺寸
         all_width = 0
         width_list = []
-        # columns 一行有几个化学式，有几行
+        #一行有num个化学式，有columns行
         columns = math.ceil(files_numbers / num)
 
         for i, img in enumerate(im_list):
-            all_width = all_width + img.size[0]#width, height = ims[0].size
+            all_width = all_width + img.size[0]
             if (i+1) % num == 0 or i == (len(im_list) - 1):
                 width_list.append(all_width)
                 all_width = 0
 
         # 创建空白长图
-        result = Image.new(im_list[0].mode, (max(width_list), im_list[0].size[1] * columns), (255, 255, 255))
+        result = Image.new(im_list[0].mode, (max(width_list) + 50*(num-1), im_list[0].size[1] * columns), (255, 255, 255))
         # 创建原图
-        result_source = Image.new(im_list[0].mode, (max(width_list), im_list[0].size[1] * columns), (255, 255, 255))
+        result_source = Image.new(im_list[0].mode, (max(width_list) + 50*(num-1), im_list[0].size[1] * columns), (255, 255, 255))
         # 拼接图片
         all_length = 0
         for i, im in enumerate(im_list):
             if i == random.randint(1, 10):
-                files = getFiles('G:/xiao/dataset_molcreateV2/code/other_elements/')
+                files = getFiles('G:/xiao/dataset_molcreateV2/code/other_elements/pymol_graphs/')
 
                 path = files[random.randint(0, len(files) - 1)]
                 img = Image.open(path)
@@ -134,58 +134,15 @@ def pinjie(list_path, style, num, image_num, save_path, pixel=60):
                 continue
 
             result_source.paste(im, box=(all_length, im_list[0].size[1] * math.floor(i/num)))
-
-            img_array = np.array(im)
+            #img_array = np.array(im)
             #img_array = cv2.cvtColor(np.asarray(im), cv2.COLOR_RGB2BGR)
             image_np = np.where(np.array(im.convert('L')) <= 150, 0, 1)
-
-            # cols_status = np.any(image_np, axis=0)
-            # x_index = np.where(cols_status)[0]
-            #
-            # rows_status = np.any(image_np, axis=1)
-            # y_index = np.where(rows_status)[0]
-            # print(x_index[0], x_index[-1], y_index[0], y_index[-1])
-            #
-            # top_left = (x_index[0], y_index[0])
-            # right_bottom = (x_index[-1], y_index[-1])
-
-            #image_np = image_np.reshape((image_np.shape[0], image_np.shape[1], 1))
-            # bbox = extract_bboxes(image_np)
-
             image_np = np.asarray(image_np).astype(np.float32)
-            # img = cv2.cvtColor(image_np, cv2.COLOR_GRAY2RGB)
-            # contours, hierarchy = cv2.findContours(np.array(image_np, np.uint8), cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
-            # print(len(contours))
-            # for i in range(len(contours)):
-            #     cv2.drawContours(img, contours, i, (255, 255, 0), 5)
-            #     cv2.imshow('contour-%d' % i, img)
-            #     cv2.waitKey()
-            #
-            # cv2.destroyAllWindows()
-            # plt.subplot(1, 2, 1)
-            # plt.imshow(image_np)
-            #plt.show()
-
 
             blur_factor = 12
             kernel = np.ones((blur_factor, blur_factor))
             blurred_image_array = binary_erosion(image_np, selem=kernel)
             blurred_image_array = np.where(blurred_image_array == 0, 1, 0)
-            #blurred_image_array = image_np
-            # plt.imshow(blurred_image_array)
-            # plt.show()
-
-            # chull = morphology.convex_hull_image(image_np)
-            # chull = np.where(chull == True, 1, 0)
-            # chull = chull.reshape((chull.shape[0], chull.shape[1], 1))
-
-
-            # colors = random_colors(50)
-            # color = colors[random.randint(0, 50)]
-            # masked_image = apply_mask(img_array, blurred_image_array, color)
-            #
-            # masked_image_save = Image.fromarray(masked_image.astype(np.uint8))
-            # masked_image_save.save('G:/xiao/workspace/image_seg/create_dataset/1.png')
 
             gt_masks = blurred_image_array
             gt_masks = np.asarray(gt_masks).astype(np.float32)
@@ -195,6 +152,14 @@ def pinjie(list_path, style, num, image_num, save_path, pixel=60):
             im = Image.fromarray(image_np.astype('uint8')).convert('RGB')
             result.paste(im, box=(all_length, im_list[0].size[1] * math.floor(i/num)))
             all_length = all_length + im.size[0]
+            if i < (files_numbers-1):
+                arrow_list = [Image.open('G:/xiao/dataset_molcreateV2/code/other_elements/arrow/'+fn) for fn in listdir('G:/xiao/dataset_molcreateV2/code/other_elements/arrow/') if fn.endswith('.jpg') or fn.endswith('.png')]
+                arrow_img = random.sample(arrow_list, 1)
+                arrow_img = arrow_img[0]
+                arrow_img = arrow_img.resize((50, im_list[0].size[1]))
+                result_source.paste(arrow_img, box=(all_length, im_list[0].size[1] * math.floor(i / num)))
+                result.paste(arrow_img, box=(all_length, im_list[0].size[1] * math.floor(i / num)))
+                all_length = all_length + 50
             if (i+1) % num == 0:
                 all_length = 0
 
@@ -213,17 +178,18 @@ def pinjie(list_path, style, num, image_num, save_path, pixel=60):
                 width_list.append(all_width)
                 all_width = 0
 
-        # columns 一行有几个化学式，有几行
-        columns = num
+        # columns 一行有num个化学式，有columns列
+        columns = math.ceil(files_numbers / num)
+
         # 创建空白长图
-        result = Image.new(im_list[0].mode, (im_list[0].size[0] * columns, max(width_list)), (255, 255, 255))
+        result = Image.new(im_list[0].mode, (im_list[0].size[0] * columns, max(width_list) + 50*(num-1)), (255, 255, 255))
         # 创建原图
-        result_source = Image.new(im_list[0].mode, (im_list[0].size[0] * columns, max(width_list)), (255, 255, 255))
+        result_source = Image.new(im_list[0].mode, (im_list[0].size[0] * columns, max(width_list) + 50*(num-1)), (255, 255, 255))
         # 拼接图片
         all_length = 0
         for i, im in enumerate(im_list):
             if i == random.randint(1, 10):
-                files = getFiles('G:/xiao/dataset_molcreateV2/code/other_elements/')
+                files = getFiles('G:/xiao/dataset_molcreateV2/code/other_elements/pymol_graphs/')
 
                 path = files[random.randint(0, len(files) - 1)]
                 img = Image.open(path)
@@ -237,7 +203,7 @@ def pinjie(list_path, style, num, image_num, save_path, pixel=60):
                 continue
 
             result_source.paste(im, box=(im_list[0].size[0] * math.floor(i / num), all_length))
-            img_array = np.array(im)
+            #img_array = np.array(im)
             image_np = np.where(np.array(im.convert('L')) <= 150, 0, 1)
 
             image_np = np.asarray(image_np).astype(np.float32)
@@ -255,6 +221,15 @@ def pinjie(list_path, style, num, image_num, save_path, pixel=60):
             im = Image.fromarray(image_np.astype('uint8')).convert('RGB')
             result.paste(im, box=(im_list[0].size[0] * math.floor(i/num), all_length))
             all_length = all_length + im.size[1]
+
+            if i < (files_numbers-1):
+                arrow_list = [Image.open('G:/xiao/dataset_molcreateV2/code/other_elements/arrow/'+fn) for fn in listdir('G:/xiao/dataset_molcreateV2/code/other_elements/arrow/') if fn.endswith('.jpg') or fn.endswith('.png')]
+                arrow_img = random.sample(arrow_list, 1)
+                arrow_img = arrow_img[0]
+                arrow_img = arrow_img.resize((random.randint(50, im_list[0].size[0]), 50))
+                result_source.paste(arrow_img, (im_list[0].size[0] * math.floor(i/num), all_length))
+                result.paste(arrow_img, (im_list[0].size[0] * math.floor(i/num), all_length))
+                all_length = all_length + 50
             if (i+1) % num == 0:
                 all_length = 0
 
@@ -285,13 +260,13 @@ def pinjie(list_path, style, num, image_num, save_path, pixel=60):
 #         Filelist.append(dirpath)
 #         #print(dirpath,file_count)
 #     return Filelist
-
-# style = 0#random.randint(0, 1)
+#
+# style = 1#random.randint(0, 1)
 # if style == 0:
 #     folders = getSubfolder(preimage_path + '/h/')
 # else:
 #     folders = getSubfolder(preimage_path + '/w/')
-
+#
 # sequence = random.randint(1, len(folders)-1)
 # pinjie_path = folders[sequence] + '/'
 # files = getFiles(folders[sequence])
@@ -301,8 +276,8 @@ def pinjie(list_path, style, num, image_num, save_path, pixel=60):
 # else:
 #     num = random.randint(1, len(files))
 # print(folders[sequence], num, len(files))
-
-#img = pinjie(pinjie_path, style=style, num=1, image_num=1, save_path='22.png', pixel=[10, 70, 130])
+#
+# img = pinjie(pinjie_path, style=style, num=3, image_num=5, save_path='22.png', pixel=[10, 70, 130])
 
 '''
 import cv2 as cv
