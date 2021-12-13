@@ -19,6 +19,8 @@ from skimage import data,color,morphology
 import time
 import cv2
 import numpy as np
+from skimage.morphology import binary_erosion
+
 
 def getFiles(path):
     Filelist = []
@@ -181,6 +183,8 @@ def mask_annjson(path):
         # # Define the blue colour we want to find - remember OpenCV uses BGR ordering
         # blue = [210, 110, 10]
         # #img = np.array([[[1,2,3],[4,5,6]],[[3,2,1],[1,2,3]],[[4,5,6],[6,5,4]]])
+
+
         # # tt=im.reshape(-1,3)
         # # ttt=set([str(i) for i in tt])
         # # print(ttt)
@@ -195,6 +199,7 @@ def mask_annjson(path):
 
         # 记录每一张图像的masks 维度是[n, h, w] n是每张图mask的数量
         mask_array = []
+        mask_array_color = []
         values = [[10, 110, 210], [20, 120, 220], [30, 130, 230]]#[[10, 70, 130], [20, 80, 140], [30, 90, 150], [40, 100, 160], [50, 110, 170], [60, 120, 180], [70, 130, 190], [80, 140, 200]]
         for value in values:
             # 判断第一个有没有，没有就跳过
@@ -227,8 +232,17 @@ def mask_annjson(path):
                 labels_arr = np.where(labels_arr == True, 1, 0)
                 mask_array1 = labels_arr.reshape((labels_arr.shape[0], labels_arr.shape[1], 1))
                 '''
+                mask_array_color.append(labels_arr)
+
+                labels_arr = np.where(labels_arr == 0, 1, 0)
+                blur_factor = 12
+                kernel = np.ones((blur_factor, blur_factor))
+                blurred_image_array = binary_erosion(labels_arr, selem=kernel)
+                blurred_image_array = np.where(blurred_image_array == 0, 1, 0)
+                labels_arr = blurred_image_array
 
                 mask_array.append(labels_arr)
+
                 mask_label = True
 
                 class_id = 1
@@ -244,7 +258,7 @@ def mask_annjson(path):
                         segmentation_id = segmentation_id + 1
 
         if mask_label == True:
-            image_info = pycococreatortools.create_image_info(image_id, file.split('/image/'), img.size)
+            image_info = pycococreatortools.create_image_info(image_id, name + '.pdf_' + num, img.size)
             coco_output["images"].append(image_info)
             image_id = image_id + 1
 
@@ -254,9 +268,9 @@ def mask_annjson(path):
                 # plt.imshow(mask_array[i])
                 # plt.show()
                 # 把img和mask合并
-
                 color = colors[i]
-                masked_image = apply_mask(masked_image, mask_array[i], color)
+
+                masked_image = apply_mask(masked_image, mask_array_color[i], color)
 
             masked_image_save = Image.fromarray(masked_image.astype(np.uint8))
             masked_image_save.save(path + 'mask/' + name + '.pdf_' + num)
@@ -272,7 +286,7 @@ def mask_annjson(path):
 
 import concurrent.futures
 if __name__ == "__main__":
-    path = 'G:/xiao/dataset_molcreateV2/data/create_ann3/'
+    path = 'G:/xiao/dataset_molcreateV2/data/create_ann/'
     mask_annjson(path)
     # with concurrent.futures.ProcessPoolExecutor() as executor:
     #     executor.submit(mask_annjson, path)

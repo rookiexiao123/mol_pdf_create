@@ -5,15 +5,20 @@ import os
 from random_words import LoremIpsum, RandomWords
 import random
 import cv2
-from merge_image_erode import pinjie
+from merge_image_erode import pinjie, pinjie_samepic
 import time
 from pdf_2_img_Convert import convert
 
 current_dir = os.path.dirname(__file__)
 
 preimage_path = 'G:/xiao/dataset_molcreateV2/data/pre_image/'
+li = LoremIpsum()
+title = li.get_sentences(1)
+rw = RandomWords()
+words = rw.random_words(count=3)
+author =  words[0] + words[1] + words[2]
 
-head = r"""
+head1 = r"""
 \documentclass[a4paper]{article}
 
 \usepackage{graphicx}
@@ -22,15 +27,28 @@ head = r"""
 \usepackage{caption}
 \usepackage{geometry}
 \usepackage{color}
-%\geometry{a4paper,left=2cm,right=2cm,top=1cm,bottom=1cm}
-\geometry{a4paper,scale=0.8}
-\setlength{\columnsep}{22pt}  
+\geometry{a4paper,left=2cm,right=2cm,top=0.5cm,bottom=1cm}
+%\geometry{a4paper,scale=1}
+\setlength{\columnsep}{22pt}      
+"""
+title = r'\title{\textbf{' + title + r'''}}
+'''
+
+author = r'\author{\textbf{' + author + r'''}}
+\date{\today}   
+'''
+
+head2 = r"""
 \begin{document}
-\begin{multicols}{2}
+%\begin{multicols}{2}
+
+%\maketitle          
 """
 
+head = head1 + title + author + head2
+
 end = r"""
-\end{multicols}
+%\end{multicols}
 \end{document}
 """
 
@@ -74,7 +92,7 @@ def text_create(name, msg):
 
 def add_text(num):
     li = LoremIpsum()
-    text = li.get_sentences(num)
+    text = li.get_sentences(num) + str(random.randint(0, 10000000))
     text = text + r"""
 
 \noindent {\color{%s}\rule[-2pt]{%dcm}{%fem}}    
@@ -82,61 +100,56 @@ def add_text(num):
 """%(random.choice(['red', 'black', 'green', 'blue', 'yellow', 'cyan', 'magenta']), random.randint(3, 8), random.uniform(0.05, 0.3))
     return text
 
-def add_onecolumn_image(save_path, pixel):
-    style = random.randint(0, 1)
-    if style == 0:
-        folders = getSubfolder(preimage_path + '/h/')
-    else:
-        folders = getSubfolder(preimage_path + '/w/')
+def add_onecolumn_image(save_path, pixel, figure_flag):
+    round_flag = True
 
-    sequence = random.randint(1, len(folders) - 1)
-    pinjie_path = folders[sequence] + '/'
-    files = getFiles(folders[sequence])
+    while(round_flag == True):
+        style = random.randint(0, 1)
+        if style == 0:
+            folders = getSubfolder(preimage_path + '/h/')
+        else:
+            folders = getSubfolder(preimage_path + '/w/')
 
-    if len(files) > 10:
-        image_num = random.randint(6, 10)
-    elif len(files) > 5:
-        image_num = random.randint(3, len(files))
-    else:
-        image_num = random.randint(1, len(files))
-
-    if image_num > 5:
-        num = random.randint(3, 5)
-    else:
-        num = random.randint(1, image_num)
-
-    img = pinjie(pinjie_path, style=style, num=num, image_num=image_num, save_path=save_path, pixel=pixel)
-    w, h = img.size
-    while((h / w >= 2) or w > 4000):
         sequence = random.randint(1, len(folders) - 1)
         pinjie_path = folders[sequence] + '/'
         files = getFiles(folders[sequence])
 
         if len(files) > 10:
-            image_num = random.randint(1, 10)
+            image_num = random.randint(8, 16)
+        elif len(files) > 5:
+            image_num = random.randint(5, len(files))
         else:
             image_num = random.randint(1, len(files))
 
         if image_num > 5:
-            num = random.randint(1, 5)
+            num = random.randint(3, 5)
         else:
             num = random.randint(1, image_num)
-        img = pinjie(pinjie_path, style=style, num=num, image_num=image_num, save_path=save_path, pixel=pixel)
+        if image_num < 5:
+            continue
+        img = pinjie_samepic(pinjie_path, style=style, num=num, image_num=image_num, save_path=save_path, pixel=pixel)
         w, h = img.size
+        print('pinjie_path', w, h, num, image_num, pinjie_path, save_path)
+        if h > w:
+            round_flag = False
+
     head = r"""
-\begin{figure*}[htbp]
+\begin{figure}[H]
 \centering
 """
     end = r"""
-\end{figure*}
+\end{figure}
 """
     content = (r"""\includegraphics[width= 0.8\linewidth, keepaspectratio]{%s}""") % (save_path)
     li = LoremIpsum()
-    content = content + (r"""
+    content1 = content + (r"""
 \caption{%s}
-""") % (li.get_sentences(1))
+""") % (li.get_sentences(1) + str(random.randint(1, 100000)))
 
-    text = head + content + end
+    if figure_flag == True:
+        text = head + content1 + end
+    else:
+        text = head + content + end
     return text
 
 def add_twocolumn_image(save_path, pixel):
@@ -193,8 +206,8 @@ def add_twocolumn_image(save_path, pixel):
     content = (r"""\includegraphics[width= 0.8\linewidth, keepaspectratio]{%s}""") % (save_path)
     li = LoremIpsum()
     content = content + (r"""
-\caption{%s}
-""") % (li.get_sentences(1))
+\caption{\textbf{%s}}
+""") % (li.get_sentences(1) + str(random.randint(1, 100000)))
 
     text = head + content + end
     return text
@@ -215,7 +228,7 @@ def add_table(columns, rows):
         for row in range(rows):
             string = ''
             for column in range(columns):
-                string = string + words[column*row + column]
+                string = string + words[column*row + column] + str(random.randint(1, 10000))
                 if column < (columns-1):
                     string = string + ' & '
             string = string + r' \\'
@@ -241,7 +254,20 @@ def add_table(columns, rows):
         for row in range(rows):
             string = ''
             for column in range(columns):
-                string = string + words[column * row + column]
+                if row == 0:
+                    string = string + words[column * row + column]
+                else:
+                    #string = string + str(random.uniform(0, 100000))
+                    string = string + str(random.randint(0, 10)) + str(random.choice('+-*/<>?.,|~!=')) + str(random.randint(0, 10))
+                '''
+                random_number = random.randint(0, 2)
+                if random_number == 0:
+                    string = string + words[column * row + column] + str(random.randint(1, 100000))
+                elif random_number == 1:
+                    string = string + str(random.randint(1, 100000))
+                else:
+                    string = string + words[column * row + column]
+                '''
                 if column < (columns - 1):
                     string = string + ' & '
             string = string + r' \\'
@@ -287,7 +313,7 @@ def add_other_image(save_path):
     content = (r"""\includegraphics[width= 0.8\linewidth, keepaspectratio]{%s}""") % (path)
     li = LoremIpsum()
     content = content + (r"""
-\caption{%s}
+\caption{\textbf{%s}}
 """) % (li.get_sentences(1))
 
     text = head + content + end
@@ -297,7 +323,7 @@ def add_other_image(save_path):
 
 if __name__ == '__main__':
     i = 0
-    while(i < 200):
+    while(i < 1000):
         i = i + 1
         name = str(int(time.time()))
 
@@ -312,46 +338,69 @@ if __name__ == '__main__':
         if not os.path.exists('G:/xiao/dataset_molcreateV2/code/src_image/gen_image/' + name):
             os.makedirs('G:/xiao/dataset_molcreateV2/code/src_image/gen_image/' + name)
 
-        text_create(name, add_onecolumn_image('gen_image/' + name + '/1.png', pixel=[10, 70, 130]))
+        text_create(name, add_onecolumn_image('gen_image/' + name + '/1.png', pixel=[10, 110, 210], figure_flag=True))
+
+        #text_create(name, add_onecolumn_image('gen_image/' + name + '/2.png', pixel=[30, 130, 230], figure_flag=True))
+
+        for t in range(0, 2):
+            text_create(name, add_text(random.randint(2, 8)))
+
+
+
+        """
+        text_create(name, add_onecolumn_image('gen_image/' + name + '/1.png', pixel=[80, 130, 200]))
+        text_create(name, add_other_image('G:/xiao/dataset_molcreateV2/code/other_elements/negative_sample/'))
         for t in range(1, 3):
             text_create(name, add_text(random.randint(2, 8)))
 
         text_create(name, add_table(random.randint(2, 10), random.randint(3, 14)))
         text_create(name, add_twocolumn_image('gen_image/' + name + '/2.png', pixel=[20 , 80, 140]))
+        text_create(name, add_other_image('G:/xiao/dataset_molcreateV2/code/other_elements/negative_sample/'))
+        text_create(name, add_other_image('G:/xiao/dataset_molcreateV2/code/other_elements/pymol_graphs/'))
         for t in range(2, 8):
             text_create(name, add_text(random.randint(2, 8)))
 
+        text_create(name, add_other_image('G:/xiao/dataset_molcreateV2/code/other_elements/pymol_graphs/'))
         text_create(name, add_twocolumn_image('gen_image/' + name + '/3.png', pixel=[30, 90, 150]))
-        for t in range(2, 8):
+        text_create(name, add_other_image('G:/xiao/dataset_molcreateV2/code/other_elements/negative_sample/'))
+        text_create(name, add_table(random.randint(2, 10), random.randint(3, 14)))
+        for t in range(2, 4):
             text_create(name, add_text(random.randint(2, 8)))
 
+        text_create(name, add_other_image('G:/xiao/dataset_molcreateV2/code/other_elements/negative_sample/'))
         text_create(name, add_twocolumn_image('gen_image/' + name + '/4.png', pixel=[40, 100, 160]))
         text_create(name, add_other_image('G:/xiao/dataset_molcreateV2/code/other_elements/pymol_graphs/'))
         text_create(name, add_table(random.randint(2, 10), random.randint(3, 14)))
-        for t in range(2, 8):
+        for t in range(2, 4):
             text_create(name, add_text(random.randint(2, 8)))
 
         text_create(name, add_other_image('G:/xiao/dataset_molcreateV2/code/other_elements/pymol_graphs/'))
         text_create(name, add_twocolumn_image('gen_image/' + name + '/5.png', pixel=[50, 110, 170]))
         text_create(name, add_table(random.randint(2, 10), random.randint(3, 14)))
-        for t in range(2, 8):
+        text_create(name, add_other_image('G:/xiao/dataset_molcreateV2/code/other_elements/pymol_graphs/'))
+        for t in range(2, 4):
             text_create(name, add_text(random.randint(2, 8)))
 
         text_create(name, add_twocolumn_image('gen_image/' + name + '/6.png', pixel=[60, 120, 180]))
-        for t in range(2, 8):
+        text_create(name, add_other_image('G:/xiao/dataset_molcreateV2/code/other_elements/negative_sample/'))
+        text_create(name, add_other_image('G:/xiao/dataset_molcreateV2/code/other_elements/pymol_graphs/'))
+        for t in range(2, 4):
             text_create(name, add_text(random.randint(2, 8)))
 
-        text_create(name, add_twocolumn_image('gen_image/' + name + '/7.png', pixel=[70, 120, 190]))
+        text_create(name, add_twocolumn_image('gen_image/' + name + '/7.png', pixel=[70, 130, 190]))
         text_create(name, add_other_image('G:/xiao/dataset_molcreateV2/code/other_elements/pymol_graphs/'))
+        text_create(name, add_other_image('G:/xiao/dataset_molcreateV2/code/other_elements/negative_sample/'))
         text_create(name, add_table(random.randint(2, 10), random.randint(3, 14)))
-        for t in range(2, 8):
+        for t in range(2, 4):
             text_create(name, add_text(random.randint(2, 8)))
 
-        text_create(name, add_onecolumn_image('gen_image/' + name + '/8.png', pixel=[80, 130, 200]))
+        text_create(name, add_onecolumn_image('gen_image/' + name + '/8.png', pixel=[80, 140, 200]))
         text_create(name, add_table(random.randint(2, 10), random.randint(3, 14)))
-        text_create(name, add_other_image('G:/xiao/dataset_molcreateV2/code/other_elements/pymol_graphs/'))
+        text_create(name, add_other_image('G:/xiao/dataset_molcreateV2/code/other_elements/negative_sample/'))
+        
         for t in range(2, 8):
             text_create(name, add_text(random.randint(2, 8)))
+        """
 
         text_create(name, end)
         command = 'F:/2345Installs/texliver/2021/bin/win32/pdflatex %s.tex'%(name)

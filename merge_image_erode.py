@@ -1,7 +1,7 @@
 # pinjie image with erode
 
 from os import listdir
-from PIL import Image
+from PIL import Image, ImageDraw, ImageFont
 import os
 import math
 import random
@@ -11,6 +11,8 @@ from skimage import data,color,morphology
 import cv2
 import colorsys
 from skimage.morphology import binary_erosion
+from random_words import LoremIpsum, RandomWords
+
 
 def getFiles(path):
     Filelist = []
@@ -113,14 +115,17 @@ def pinjie(list_path, style, num, image_num, save_path, pixel=60):
                 all_width = 0
 
         # 创建空白长图
-        result = Image.new(im_list[0].mode, (max(width_list) + 50*(num-1), im_list[0].size[1] * columns), (255, 255, 255))
+        result = Image.new(im_list[0].mode, (max(width_list) + 100*(num-1), im_list[0].size[1] * columns), (255, 255, 255))
         # 创建原图
-        result_source = Image.new(im_list[0].mode, (max(width_list) + 50*(num-1), im_list[0].size[1] * columns), (255, 255, 255))
+        result_source = Image.new(im_list[0].mode, (max(width_list) + 100*(num-1), im_list[0].size[1] * columns), (255, 255, 255))
         # 拼接图片
         all_length = 0
         for i, im in enumerate(im_list):
-            if i == random.randint(1, 10):
-                files = getFiles('G:/xiao/dataset_molcreateV2/code/other_elements/pymol_graphs/')
+            if random.randint(1, 3) == 2 and (i != 0):
+                if random.randint(0, 1) == 0:
+                    files = getFiles('G:/xiao/dataset_molcreateV2/code/other_elements/pymol_graphs/')
+                else:
+                    files = getFiles('G:/xiao/dataset_molcreateV2/code/other_elements/image_subscript/')
 
                 path = files[random.randint(0, len(files) - 1)]
                 img = Image.open(path)
@@ -128,6 +133,7 @@ def pinjie(list_path, style, num, image_num, save_path, pixel=60):
 
                 result_source.paste(img, box=(all_length, im_list[0].size[1] * math.floor(i / num)))
                 result.paste(img, box=(all_length, im_list[0].size[1] * math.floor(i/num)))
+
                 all_length = all_length + im.size[0]
                 if (i+1) % num == 0:
                     all_length = 0
@@ -153,13 +159,32 @@ def pinjie(list_path, style, num, image_num, save_path, pixel=60):
             result.paste(im, box=(all_length, im_list[0].size[1] * math.floor(i/num)))
             all_length = all_length + im.size[0]
             if i < (files_numbers-1):
-                arrow_list = [Image.open('G:/xiao/dataset_molcreateV2/code/other_elements/arrow/'+fn) for fn in listdir('G:/xiao/dataset_molcreateV2/code/other_elements/arrow/') if fn.endswith('.jpg') or fn.endswith('.png')]
-                arrow_img = random.sample(arrow_list, 1)
-                arrow_img = arrow_img[0]
-                arrow_img = arrow_img.resize((50, im_list[0].size[1]))
-                result_source.paste(arrow_img, box=(all_length, im_list[0].size[1] * math.floor(i / num)))
-                result.paste(arrow_img, box=(all_length, im_list[0].size[1] * math.floor(i / num)))
-                all_length = all_length + 50
+                if random.randint(0, 1) == 0:
+                    arrow_list = [Image.open('G:/xiao/dataset_molcreateV2/code/other_elements/arrow/'+fn) for fn in listdir('G:/xiao/dataset_molcreateV2/code/other_elements/arrow/') if fn.endswith('.jpg') or fn.endswith('.png')]
+                    arrow_img = random.sample(arrow_list, 1)
+                    arrow_img = arrow_img[0]
+                    arrow_img = arrow_img.resize((100, im_list[0].size[1]))
+                    result_source.paste(arrow_img, box=(all_length, im_list[0].size[1] * math.floor(i / num)))
+                    result.paste(arrow_img, box=(all_length, im_list[0].size[1] * math.floor(i / num)))
+                else:
+                    font = ImageFont.truetype('ARLRDBD.TTF', size=30)
+                    color = (0, 0, 0)
+                    rw = RandomWords()
+                    words = rw.random_words(count=3)
+                    text = words[0]
+                    draw = ImageDraw.Draw(result_source)
+                    draw.text((all_length, im_list[0].size[1] * math.floor(i / num)), text, fill=color, font=font)
+                    draw.text((all_length, im_list[0].size[1] * math.floor(i / num) + 50), words[1], fill=color, font=font)
+                    draw.text((all_length, im_list[0].size[1] * math.floor(i / num) + 100), words[2], fill=color, font=font)
+                    draw.text((all_length, im_list[0].size[1] * math.floor(i / num) + 150), str(random.randint(1,10000)), fill=color,font=font)
+
+                    draw = ImageDraw.Draw(result)
+                    draw.text((all_length, im_list[0].size[1] * math.floor(i / num)), text, fill=color, font=font)
+                    draw.text((all_length, im_list[0].size[1] * math.floor(i / num) + 50), words[1], fill=color, font=font)
+                    draw.text((all_length, im_list[0].size[1] * math.floor(i / num) + 100), words[2], fill=color, font=font)
+                    draw.text((all_length, im_list[0].size[1] * math.floor(i / num) + 150),str(random.randint(1, 10000)), fill=color, font=font)
+
+                all_length = all_length + 100
             if (i+1) % num == 0:
                 all_length = 0
 
@@ -182,14 +207,17 @@ def pinjie(list_path, style, num, image_num, save_path, pixel=60):
         columns = math.ceil(files_numbers / num)
 
         # 创建空白长图
-        result = Image.new(im_list[0].mode, (im_list[0].size[0] * columns, max(width_list) + 50*(num-1)), (255, 255, 255))
+        result = Image.new(im_list[0].mode, (im_list[0].size[0] * columns, max(width_list) + 100*(num-1)), (255, 255, 255))
         # 创建原图
-        result_source = Image.new(im_list[0].mode, (im_list[0].size[0] * columns, max(width_list) + 50*(num-1)), (255, 255, 255))
+        result_source = Image.new(im_list[0].mode, (im_list[0].size[0] * columns, max(width_list) + 100*(num-1)), (255, 255, 255))
         # 拼接图片
         all_length = 0
         for i, im in enumerate(im_list):
-            if i == random.randint(1, 10):
-                files = getFiles('G:/xiao/dataset_molcreateV2/code/other_elements/pymol_graphs/')
+            if random.randint(1, 3) == 2 and (i != 0):
+                if random.randint(0, 1) == 0:
+                    files = getFiles('G:/xiao/dataset_molcreateV2/code/other_elements/pymol_graphs/')
+                else:
+                    files = getFiles('G:/xiao/dataset_molcreateV2/code/other_elements/image_subscript/')
 
                 path = files[random.randint(0, len(files) - 1)]
                 img = Image.open(path)
@@ -223,13 +251,29 @@ def pinjie(list_path, style, num, image_num, save_path, pixel=60):
             all_length = all_length + im.size[1]
 
             if i < (files_numbers-1):
-                arrow_list = [Image.open('G:/xiao/dataset_molcreateV2/code/other_elements/arrow/'+fn) for fn in listdir('G:/xiao/dataset_molcreateV2/code/other_elements/arrow/') if fn.endswith('.jpg') or fn.endswith('.png')]
-                arrow_img = random.sample(arrow_list, 1)
-                arrow_img = arrow_img[0]
-                arrow_img = arrow_img.resize((random.randint(50, im_list[0].size[0]), 50))
-                result_source.paste(arrow_img, (im_list[0].size[0] * math.floor(i/num), all_length))
-                result.paste(arrow_img, (im_list[0].size[0] * math.floor(i/num), all_length))
-                all_length = all_length + 50
+                if random.randint(0, 1) == 0:
+                    arrow_list = [Image.open('G:/xiao/dataset_molcreateV2/code/other_elements/arrow/'+fn) for fn in listdir('G:/xiao/dataset_molcreateV2/code/other_elements/arrow/') if fn.endswith('.jpg') or fn.endswith('.png')]
+                    arrow_img = random.sample(arrow_list, 1)
+                    arrow_img = arrow_img[0]
+                    arrow_img = arrow_img.resize((random.randint(100, im_list[0].size[0]), 100))
+                    result_source.paste(arrow_img, (im_list[0].size[0] * math.floor(i/num), all_length))
+                    result.paste(arrow_img, (im_list[0].size[0] * math.floor(i/num), all_length))
+                else:
+                    font = ImageFont.truetype('ARLRDBD.TTF', size=30)
+                    color = (0, 0, 0)
+                    rw = RandomWords()
+                    words = rw.random_words(count=3)
+                    draw = ImageDraw.Draw(result_source)
+                    draw.text((im_list[0].size[0] * math.floor(i/num), all_length), words[0], fill=color, font=font)
+                    draw.text((im_list[0].size[0] * math.floor(i/num)+200, all_length), words[1], fill=color, font=font)
+                    draw.text((im_list[0].size[0] * math.floor(i/num)+400, all_length), words[2], fill=color, font=font)
+
+
+                    draw = ImageDraw.Draw(result)
+                    draw.text((im_list[0].size[0] * math.floor(i/num), all_length), words[0], fill=color, font=font)
+                    draw.text((im_list[0].size[0] * math.floor(i/num)+200, all_length), words[1], fill=color, font=font)
+                    draw.text((im_list[0].size[0] * math.floor(i/num)+400, all_length), words[2], fill=color, font=font)
+                all_length = all_length + 100
             if (i+1) % num == 0:
                 all_length = 0
 
@@ -238,6 +282,235 @@ def pinjie(list_path, style, num, image_num, save_path, pixel=60):
         result_source.save('G:/xiao/dataset_molcreateV2/code/src_image/' + save_path)
     return result
 
+# 补0
+def letterbox_image(image, size):
+    iw, ih = image.size
+    w, h = size
+    scale = min(w/iw, h/ih)
+    nw = int(iw*scale)
+    nh = int(ih*scale)
+
+    image = image.resize((nw, nh), Image.BICUBIC)
+    new_image = Image.new('RGB', size, (255, 255, 255))
+    new_image.paste(image, ((w-nw)//2, (h-nh)//2))
+    return new_image
+
+
+
+def pinjie_samepic(list_path, style, num, image_num, save_path, pixel=60):
+    # 获取当前文件夹中所有JPG图像
+    im_list = [Image.open(list_path+fn) for fn in listdir(list_path) if fn.endswith('.jpg') or fn.endswith('.png')]
+    files_numbers = len(im_list)
+
+    if files_numbers > image_num:
+        files_numbers = image_num
+
+    im_list = random.sample(im_list, files_numbers)
+
+    # 高一样，宽相加
+    if style == 0:
+        # 图片转化为相同的尺寸
+        all_width = 0
+        width_list = []
+        #一行有num个化学式，有columns行
+        columns = math.ceil(files_numbers / num)
+
+        for i, img in enumerate(im_list):
+            #img = im_list[0]
+            all_width = all_width + img.size[0]
+            if (i+1) % num == 0 or i == (len(im_list) - 1):
+                width_list.append(all_width)
+                all_width = 0
+
+
+        white = random.randint(60, 150)
+        random_height = random.randint(100, 300)
+        # 创建空白长图
+        result = Image.new(im_list[0].mode, (max(width_list) + white*(num-1), (im_list[0].size[1]+random_height) * columns), (255, 255, 255))
+        # 创建原图
+        result_source = Image.new(im_list[0].mode, (max(width_list) + white*(num-1), (im_list[0].size[1]+random_height) * columns), (255, 255, 255))
+        # 拼接图片
+        all_length = 0
+        for i, im in enumerate(im_list):
+            if random.randint(1, 3) == 2 and (i != 0) and (i != 10) and (i != 20)and (i != 30):
+                if random.randint(0, 1) == 0:
+                    files = getFiles('G:/xiao/dataset_molcreateV2/code/other_elements/white/')
+                else:
+                    files = getFiles('G:/xiao/dataset_molcreateV2/code/other_elements/white/')
+
+                path = files[random.randint(0, len(files) - 1)]
+                img = Image.open(path)
+
+                if im.size[0] > 60:
+                    size_width = random.randint(60, im.size[0])
+                else:
+                    size_width = im.size[0]
+
+                img = img.resize((size_width, im.size[1]))
+
+                result_source.paste(img, box=(all_length, (im_list[0].size[1]+random_height) * math.floor(i / num)))
+                result.paste(img, box=(all_length, (im_list[0].size[1]+random_height) * math.floor(i/num)))
+
+                all_length = all_length + size_width
+                if (i+1) % num == 0:
+                    all_length = 0
+                continue
+
+            result_source.paste(im, box=(all_length, (im_list[0].size[1]+random_height) * math.floor(i/num)))
+
+            image_np = np.where(np.array(im.convert('L')) <= 150, 0, 1)
+            image_np = np.asarray(image_np).astype(np.float32)
+
+            blur_factor = 1
+            kernel = np.ones((blur_factor, blur_factor))
+            blurred_image_array = binary_erosion(image_np, selem=kernel)
+            blurred_image_array = np.where(blurred_image_array == 0, 1, 0)
+
+            gt_masks = blurred_image_array
+            gt_masks = np.asarray(gt_masks).astype(np.float32)
+            gt_masks = cv2.cvtColor(gt_masks, cv2.COLOR_GRAY2RGB)
+
+            image_np = np.where(np.array(gt_masks) == 1, [p + i for p in pixel], [244, 164, 96])
+            im = Image.fromarray(image_np.astype('uint8')).convert('RGB')
+            result.paste(im, box=(all_length, (im_list[0].size[1]+random_height) * math.floor(i/num)))
+            all_length = all_length + im.size[0]
+            if i < (files_numbers-1):
+                if True:
+                    if random.randint(0, 1) == 0:
+                        arrow_list = [Image.open('G:/xiao/dataset_molcreateV2/code/other_elements/arrow1/'+fn) for fn in listdir('G:/xiao/dataset_molcreateV2/code/other_elements/arrow1/') if fn.endswith('.jpg') or fn.endswith('.png')]
+                        arrow_img = random.sample(arrow_list, 1)
+                        arrow_img = arrow_img[0]
+                        #arrow_img = arrow_img.resize((30, im_list[0].size[1]))
+                        size = (white, im_list[0].size[1])
+                        arrow_img = letterbox_image(arrow_img, size)
+                        result_source.paste(arrow_img, box=(all_length, (im_list[0].size[1]+random_height) * math.floor(i/num)))
+                        result.paste(arrow_img, box=(all_length, (im_list[0].size[1]+random_height) * math.floor(i/num)))
+                    else:
+                        font = ImageFont.truetype('ARLRDBD.TTF', size=30)
+                        color = (0, 0, 0)
+                        rw = RandomWords()
+                        words = rw.random_words(count=3)
+                        text = words[0]
+                        draw = ImageDraw.Draw(result_source)
+                        draw.text((all_length, (im_list[0].size[1]+random_height) * math.floor(i/num)), text, fill=color, font=font)
+                        draw.text((all_length, (im_list[0].size[1]+random_height) * math.floor(i/num) + white), words[1], fill=color, font=font)
+                        draw.text((all_length, (im_list[0].size[1]+random_height) * math.floor(i/num) + 2*white), words[2], fill=color, font=font)
+                        draw.text((all_length, (im_list[0].size[1]+random_height) * math.floor(i/num) + 3*white), str(random.randint(1,10000)), fill=color,font=font)
+
+                        draw = ImageDraw.Draw(result)
+                        draw.text((all_length, (im_list[0].size[1]+random_height) * math.floor(i/num)), text, fill=color, font=font)
+                        draw.text((all_length, (im_list[0].size[1]+random_height) * math.floor(i/num) + white), words[1], fill=color, font=font)
+                        draw.text((all_length, (im_list[0].size[1]+random_height) * math.floor(i/num) + 2*white), words[2], fill=color, font=font)
+                        draw.text((all_length, (im_list[0].size[1]+random_height) * math.floor(i/num) + 3*white),str(random.randint(1, 10000)), fill=color, font=font)
+
+                    all_length = all_length + white
+            if (i+1) % num == 0:
+                all_length = 0
+
+        result.save('G:/xiao/dataset_molcreateV2/code/' + save_path)
+        result_source.save('G:/xiao/dataset_molcreateV2/code/src_image/' + save_path)
+    else:
+        # 宽一样，高相加
+        # 图片转化为相同的尺寸
+        all_width = 0
+        width_list = []
+
+        for i, img in enumerate(im_list):
+            #img = im_list[0]
+            #resize_image(i, 256)#i.resize((1280, 1280), Image.ANTIALIAS)
+            all_width = all_width + img.size[1]#width, height = ims[0].size
+            if (i+1) % num == 0 or i == (len(im_list) - 1):
+                width_list.append(all_width)
+                all_width = 0
+
+        # columns 一行有num个化学式，有columns列
+        columns = math.ceil(files_numbers / num)
+
+        white = random.randint(60, 300)
+        random_width = random.randint(100, 300)
+        # 创建空白长图
+        result = Image.new(im_list[0].mode, ((im_list[0].size[0]+random_width) * columns, max(width_list) + white*(num-1)), (255, 255, 255))
+        # 创建原图
+        result_source = Image.new(im_list[0].mode, ((im_list[0].size[0]+random_width) * columns, max(width_list) + white*(num-1)), (255, 255, 255))
+        # 拼接图片
+        all_length = 0
+        for i, im in enumerate(im_list):
+            if random.randint(1, 3) == 2 and (i != 0) and (i != 10) and (i != 20) and (i != 30):
+                if random.randint(0, 1) == 0:
+                    files = getFiles('G:/xiao/dataset_molcreateV2/code/other_elements/white/')
+                else:
+                    files = getFiles('G:/xiao/dataset_molcreateV2/code/other_elements/white/')
+
+                path = files[random.randint(0, len(files) - 1)]
+                img = Image.open(path)
+
+                if im.size[1] > 60:
+                    size_height = random.randint(60, im.size[1])
+                else:
+                    size_height = im.size[1]
+                img = img.resize((im.size[0], size_height))
+
+                result_source.paste(img, box=((im_list[0].size[0]+random_width) * math.floor(i / num), all_length))
+                result.paste(img, box=((im_list[0].size[0]+random_width) * math.floor(i / num), all_length))
+                all_length = all_length + size_height
+                if (i + 1) % num == 0:
+                    all_length = 0
+                continue
+
+            result_source.paste(im, box=((im_list[0].size[0]+random_width) * math.floor(i / num), all_length))
+            image_np = np.where(np.array(im.convert('L')) <= 150, 0, 1)
+
+            image_np = np.asarray(image_np).astype(np.float32)
+
+            blur_factor = 1
+            kernel = np.ones((blur_factor, blur_factor))
+            blurred_image_array = binary_erosion(image_np, selem=kernel)
+            blurred_image_array = np.where(blurred_image_array == 0, 1, 0)
+
+            gt_masks = blurred_image_array
+            gt_masks = np.asarray(gt_masks).astype(np.float32)
+            gt_masks = cv2.cvtColor(gt_masks, cv2.COLOR_GRAY2RGB)
+
+            image_np = np.where(np.array(gt_masks) == 1, [p + i for p in pixel], [244, 164, 96])
+            im = Image.fromarray(image_np.astype('uint8')).convert('RGB')
+            result.paste(im, box=((im_list[0].size[0]+random_width) * math.floor(i/num), all_length))
+            all_length = all_length + im.size[1]
+
+            if i < (files_numbers-1):
+                if True:
+                    if random.randint(0, 1) == 0:
+                        arrow_list = [Image.open('G:/xiao/dataset_molcreateV2/code/other_elements/arrow1/'+fn) for fn in listdir('G:/xiao/dataset_molcreateV2/code/other_elements/arrow1/') if fn.endswith('.jpg') or fn.endswith('.png')]
+                        arrow_img = random.sample(arrow_list, 1)
+                        arrow_img = arrow_img[0]
+                        # arrow_img = arrow_img.resize((100, im_list[0].size[1]))
+
+                        size = (im_list[0].size[0], white)
+                        arrow_img = letterbox_image(arrow_img, size)
+
+                        result_source.paste(arrow_img, ((im_list[0].size[0]+random_width) * math.floor(i/num), all_length))
+                        result.paste(arrow_img, ((im_list[0].size[0]+random_width) * math.floor(i/num), all_length))
+                    else:
+                        font = ImageFont.truetype('ARLRDBD.TTF', size=30)
+                        color = (0, 0, 0)
+                        rw = RandomWords()
+                        words = rw.random_words(count=3)
+                        draw = ImageDraw.Draw(result_source)
+                        draw.text(((im_list[0].size[0]+random_width) * math.floor(i/num), all_length), words[0], fill=color, font=font)
+                        draw.text(((im_list[0].size[0]+random_width) * math.floor(i/num)+white, all_length), words[1], fill=color, font=font)
+                        draw.text(((im_list[0].size[0]+random_width) * math.floor(i/num)+2*white, all_length), words[2], fill=color, font=font)
+
+                        draw = ImageDraw.Draw(result)
+                        draw.text(((im_list[0].size[0]+random_width) * math.floor(i/num), all_length), words[0], fill=color, font=font)
+                        draw.text(((im_list[0].size[0]+random_width) * math.floor(i/num)+white, all_length), words[1], fill=color, font=font)
+                        draw.text(((im_list[0].size[0]+random_width) * math.floor(i/num)+2*white, all_length), words[2], fill=color, font=font)
+                    all_length = all_length + white
+            if (i+1) % num == 0:
+                all_length = 0
+
+        # 保存图片
+        result.save('G:/xiao/dataset_molcreateV2/code/' + save_path)
+        result_source.save('G:/xiao/dataset_molcreateV2/code/src_image/' + save_path)
+    return result
 # images_path = 'G:/xiao/dataset_molcreate/image/'
 # source_path = 'G:/xiao/dataset_molcreate/source/'
 # preimage_path = 'G:/xiao/dataset_molcreate/pro_image/'
@@ -261,7 +534,7 @@ def pinjie(list_path, style, num, image_num, save_path, pixel=60):
 #         #print(dirpath,file_count)
 #     return Filelist
 #
-# style = 1#random.randint(0, 1)
+# style = 0#random.randint(0, 1)
 # if style == 0:
 #     folders = getSubfolder(preimage_path + '/h/')
 # else:

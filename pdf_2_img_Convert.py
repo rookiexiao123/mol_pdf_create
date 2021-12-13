@@ -36,12 +36,12 @@ def convert(path, outputpath):
 	return outputpath
 
 def main():
-	convert('G:/xiao/dataset_molcreate/1.pdf')
-	if len(sys.argv) != 2:
-		print("\"Usage of this function: convert.py input_path")
-	if len(sys.argv) == 2:
-		convert(sys.argv[1])	
-	sys.exit(1)
+	convert('G:/xiao/dataset_molcreateV2/data/paper/jm00306a030.pdf', 'G:/xiao/dataset_molcreateV2/data/paper/jm00306a030/')
+	# if len(sys.argv) != 2:
+	# 	print("\"Usage of this function: convert.py input_path")
+	# if len(sys.argv) == 2:
+	# 	convert(sys.argv[1])
+	# sys.exit(1)
 
 if __name__ == '__main__':
 	main()
